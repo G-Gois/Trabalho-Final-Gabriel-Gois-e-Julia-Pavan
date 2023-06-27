@@ -22,7 +22,7 @@ treinoAlunos = []
 
 #Funções do codigo:
 
-#Função para validação de CPF
+#Função para validação de CPF (Oficial)
 def validar_cpf(cpf):
     cpf = ''.join(re.findall('\d', str(cpf)))
 
@@ -119,7 +119,7 @@ def altera_exercicio(idx_aluno, idx_exercicio, nome, rep, peso):
     else:
         print('Operação cancelada.')
 
-#Função para exclusão de exercicio já cadastrado. Ela também apresenta todos os exercicios já cadastrados do usuario
+#Função para exclusão de exercicio já cadastrado.
 #Primeiramente verifica se o Index do exercicio existe, se existir exclue o exercicio
 
 def exclui_exercicio(idx_aluno, idx_exercicio):
@@ -294,7 +294,7 @@ def atualiza_cadastro():
             break
 
         nome = input('Digite o nome ou o primeiro nome do aluno: ').strip()
-        aluno, idx_aluno = escolher_aluno(nome)
+        aluno = escolher_aluno(nome)
         if aluno is None:
             print('Aluno não encontrado')
             continue
