@@ -22,7 +22,7 @@ treinoAlunos = []
 
 #Funções do codigo:
 
-#Função para validação de CPF (PEGUEI DO SITE DO GOV)
+#Função para validação de CPF
 def validar_cpf(cpf):
     cpf = ''.join(re.findall('\d', str(cpf)))
 
@@ -46,7 +46,7 @@ def validar_cpf(cpf):
 
     return False
 
-#Função para Calculo do IMC (Peso dividido por altura ao quadrado)
+#Função para Calculo do IMC (calculo para altura em cm's)
 def calcula_imc(peso, altura):
     peso=float(peso)
     altura=float(altura)
@@ -62,11 +62,12 @@ def cadastro_aluno(n, c, p, a):
         if aluno.cpf == c:
             print("CPF já cadastrado. Tente novamente.")
             return
-    
+    #Verifica se o CPF é valido chamando a função validar_cpf
     if not validar_cpf(c):
         print("CPF inválido. Tente novamente.")
         return
     
+    #Verifica se o peso e altura são valores numericos com a função is digit
     if not p.isdigit() or not a.isdigit():
         print("Peso e altura devem ser valores numéricos. Tente novamente.")
         return
@@ -86,6 +87,10 @@ def cadastro_aluno(n, c, p, a):
 #Função para cadastro de novos exercicios.
 #Verifica se o nome do exercicio ja foi cadastrado inicialmente, e se não for cadastra o novo exercicio.
 def insere_exercicio(idx_aluno, nome, rep, peso):
+    if len(treinoAlunos[idx_aluno]) >= 10:
+        print('Número máximo de exercícios atingido para este aluno.')
+        return
+    
     for exercicio in treinoAlunos[idx_aluno]:
         if exercicio.nomeExercicio.lower() == nome.lower():
             print('Esse exercício já existe no treino do aluno. Tente novamente.')
@@ -114,9 +119,8 @@ def altera_exercicio(idx_aluno, idx_exercicio, nome, rep, peso):
     else:
         print('Operação cancelada.')
 
-#Função para exclusão de exercicio já cadastrado.
+#Função para exclusão de exercicio já cadastrado. Ela também apresenta todos os exercicios já cadastrados do usuario
 #Primeiramente verifica se o Index do exercicio existe, se existir exclue o exercicio
-#vou fazer algumas alterações nessa parte do codigo, para mostrar a lista dos exercicios com seus respectivos index.
 
 def exclui_exercicio(idx_aluno, idx_exercicio):
     if idx_exercicio >= len(treinoAlunos[idx_aluno]):
@@ -150,9 +154,7 @@ def mostra_treinos(idx_aluno):
     for idx, treino in enumerate(treinos):
         print(f'Index: {idx}, Exercício: {treino.nome}, Repetições: {treino.repeticoes}, Peso: {treino.peso}\n')
 
-#Função chamada na opção Gerenciamento de treino do menu principal
-#Ela chama as funções construidas anteriormente.
-#Há alguns erros que estou resolvendo, mas atualmente está funcional
+#Função chamada para apresentar as opções de gerenciamento de treino. Essas opções foram construidas anteriormente
 def gerenciar_treino():
     opcoes = {
         '1': 'Incluir um novo exercício',
@@ -233,6 +235,7 @@ def buscar_aluno(nome):
         if aluno.nome.lower() == nome.lower():
             return aluno, i
     return None, None
+
 #Função para apresentar as opções de nomes semelhantes e o usuario escolher:
 def escolher_aluno(nome):
     aluno, idx = buscar_aluno(nome)
@@ -298,22 +301,32 @@ def atualiza_cadastro():
 
         if opcao == '1':
             novo_nome = input('Digite o nome para alteração: ').strip()
-            aluno.nome = novo_nome
-            print('Cadastro atualizado com sucesso!')
+            confirmacao = input('Tem certeza que deseja alterar o nome? (1 para Sim, 2 para Não): ')
+            if confirmacao == '1':
+                aluno.nome = novo_nome
+                print('Cadastro atualizado com sucesso!')
+            else:
+                print('Operação cancelada.')
 
         elif opcao == '2':
-            novo_cpf=input("Digite o novo CPF para alteração: ")
+            novo_cpf = input("Digite o novo CPF para alteração: ")
+            if novo_cpf == aluno.cpf:
+                print('CPF atual é o mesmo. Nenhuma alteração será feita.')
+                continue
             for aluno in cadAlunos:
                 if aluno.cpf == novo_cpf:
                     print("CPF já cadastrado. Tente novamente.")
                     return
-            
+
             if not validar_cpf(novo_cpf):
                 print("CPF inválido. Tente novamente.")
-                return            
-            print('Cadastro atualizado com sucesso!')
-            
-            aluno.cpf = novo_cpf
+                return
+            confirmacao = input('Tem certeza que deseja alterar o CPF? (1 para Sim, 2 para Não): ')
+            if confirmacao == '1':
+                aluno.cpf = novo_cpf
+                print('Cadastro atualizado com sucesso!')
+            else:
+                print('Operação cancelada.')
 
         elif opcao == '3':
             novo_peso = input("Digite o valor do novo peso em quilogramas: ")
@@ -321,35 +334,42 @@ def atualiza_cadastro():
             if not novo_peso.isdigit():
                 print("Peso deve ser um valor numérico. Tente novamente.")
                 return
-            
+
             novo_peso = float(novo_peso)
             if novo_peso <= 0:
                 print("Peso deve ser um valor positivo. Tente novamente.")
                 return
-            
-            aluno.peso = novo_peso
-            print('Cadastro atualizado com sucesso!')
+            confirmacao = input('Tem certeza que deseja alterar o peso? (1 para Sim, 2 para Não): ')
+            if confirmacao == '1':
+                aluno.peso = novo_peso
+                print('Cadastro atualizado com sucesso!')
+            else:
+                print('Operação cancelada.')
 
         elif opcao == '4':
             nova_altura = input("Digite o valor da nova altura em centímetros: ")
             if not nova_altura.isdigit():
                 print("Altura deve ser um valor numérico. Tente novamente.")
                 return
-            
+
             nova_altura = float(nova_altura)
             if nova_altura <= 0:
                 print("Altura deve ser um valor positivo. Tente novamente.")
                 return
-            
-            aluno.altura = nova_altura
-            print('Cadastro atualizado com sucesso!')
+            confirmacao = input('Tem certeza que deseja alterar a altura? (1 para Sim, 2 para Não): ')
+            if confirmacao == '1':
+                aluno.altura = nova_altura
+                print('Cadastro atualizado com sucesso!')
+            else:
+                print('Operação cancelada.')
 
-        elif opcao=='5':
+        elif opcao == '5':
             novo_nome = input('Digite o nome para alteração: ').strip()
             novo_cpf = input("Digite o novo CPF para alteração: ")
-            if novo_cpf==aluno.cpf:
-                aluno.cpf = novo_cpf
-            elif(novo_cpf!=aluno.cpf):
+            if novo_cpf == aluno.cpf:
+                print('CPF atual é o mesmo. Nenhuma alteração será feita.')
+                continue
+            elif novo_cpf != aluno.cpf:
                 for aluno in cadAlunos:
                     if aluno.cpf == novo_cpf:
                         print("CPF já cadastrado. Tente novamente.")
@@ -362,7 +382,7 @@ def atualiza_cadastro():
             if not novo_peso.isdigit():
                 print("Peso deve ser um valor numérico. Tente novamente.")
                 return
-            
+
             novo_peso = float(novo_peso)
             if novo_peso <= 0:
                 print("Peso deve ser um valor positivo. Tente novamente.")
@@ -372,17 +392,21 @@ def atualiza_cadastro():
             if not nova_altura.isdigit():
                 print("Altura deve ser um valor numérico. Tente novamente.")
                 return
-            
+
             nova_altura = float(nova_altura)
             if nova_altura <= 0:
                 print("Altura deve ser um valor positivo. Tente novamente.")
                 return
-            
-            aluno.nome = novo_nome
-            aluno.cpf = novo_cpf
-            aluno.peso = novo_peso
-            aluno.altura = nova_altura
-            print('Cadastro atualizado com sucesso!')
+
+            confirmacao = input('Tem certeza que deseja alterar todas as informações? (1 para Sim, 2 para Não): ')
+            if confirmacao == '1':
+                aluno.nome = novo_nome
+                aluno.cpf = novo_cpf
+                aluno.peso = novo_peso
+                aluno.altura = nova_altura
+                print('Cadastro atualizado com sucesso!')
+            else:
+                print('Operação cancelada.')
 
 
 #Função para excluir um aluno. (Ela exclue tanto no vetor dos alunos quanto dos treinos).
